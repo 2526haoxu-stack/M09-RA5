@@ -1,27 +1,27 @@
-public class Rot13 {
+public class RotX {
     static final String s = "aáàbcçdeéèfghiíìïjklmnñoóòpqrstuúùüvwxyz";
     static final char[] arrayMin = s.toCharArray();
     static final char[] arrayMay = s.toUpperCase().toCharArray();
-    static final String[] words = {"ABC", "XYZ", "Hola, Mr. calçot", "Perdó, per tu què és?", "IÏJ", "FGH", "Òwúi, Ùá. jiúkwb", "Zmálx, zmá bc acñ nà?"};
+    static final String[] wordsXifra = {"ABC", "XYZ", "Hola, Mr. calçot", "Perdó, per tu què és?"};
+    static final String[] wordsDesxifra = new String[wordsXifra.length];
+    static final int[] jumps = {0,2,4,6};
 
     public static void main(String[] args) {
         System.out.println("\nXifrat\n------");
-
-        for (int i = 0; i < words.length; i++) {
-            String result = "";
-            if (i < 4) {
-                result = xifraRot13(words[i]);
-                System.out.printf("%-23s => %s%n", words[i], result);
-            } else {
-                if (i == 4) System.out.println("\nDesxifrat\n------");
-                result = desxifraRot13(words[i]);
-                System.out.printf("%-23s => %s%n", words[i], result);
-            }
-
+        for (int i = 0; i < wordsXifra.length; i++) {
+            String s = xifraRotX(wordsXifra[i], jumps[i]);
+            wordsDesxifra[i] = s;
+            System.out.printf("(%d)-%-23s => %s%n", jumps[i], wordsXifra[i], s);
         }
+
+        System.out.println("\nDesxifrat\n------");
+        for (int i = 0; i < wordsDesxifra.length; i++) { System.out.printf("(%d)-%-23s => %s%n", jumps[i], wordsDesxifra[i], desxifraRotX(wordsDesxifra[i], jumps[i])); }
+
+        System.out.println("\nMissatge xifrat: Úiüht, úiü wx ùxì ív?\n------");
+        forcaBrutaRotX(wordsDesxifra[3]);
     }
 
-    public static String xifraRot13(String word) {
+    public static String xifraRotX(String word, int jump) {
         String result = "";
 
         for (int i = 0; i < word.length(); i++) {
@@ -32,21 +32,21 @@ public class Rot13 {
                 for (int j = 0; j < arrayMay.length; j++) { if (c == arrayMay[j]) exist = true; }
 
                 if (exist) {
-                    p = (positionMay(c)+13)%arrayMay.length;
+                    p = (positionMay(c)+jump)%arrayMay.length;
                     result+=arrayMay[p];
                 } else result+=c;
             } else {
                 for (int j = 0; j < arrayMin.length; j++) { if (c == arrayMin[j]) exist = true; }
 
                 if (exist) {
-                    p = (positionMin(c)+13)%arrayMin.length;
+                    p = (positionMin(c)+jump)%arrayMin.length;
                     result+=arrayMin[p];
                 } else result+=c;
             }
         } return result;
     }
 
-    public static String desxifraRot13(String word) {
+    public static String desxifraRotX(String word, int jump) {
         String result = "";
 
         for (int i = 0; i < word.length(); i++) {
@@ -56,18 +56,25 @@ public class Rot13 {
             if (Character.isUpperCase(c)) {
                 for (int j = 0; j < arrayMay.length; j++) { if (c == arrayMay[j]) exist = true; }
                 if (exist) {
-                    p = positionMay(c)-13;
+                    p = positionMay(c)-jump;
                     result+= (p >= 0) ? arrayMay[p] : arrayMay[arrayMay.length+p];
                 } else result+=c;
             } else {
                 for (int j = 0; j < arrayMin.length; j++) { if (c == arrayMin[j]) exist = true; }
 
                 if (exist) {
-                    p = positionMin(c)-13;
+                    p = positionMin(c)-jump;
                     result+= (p >= 0) ? arrayMin[p] : arrayMin[arrayMin.length+p];
                 } else result+=c;
             }
         } return result;
+    }
+
+    public static void forcaBrutaRotX(String word) {
+        for (int i = 0; i < arrayMin.length; i++) {
+            String s = desxifraRotX(word, i);
+            System.out.printf("(%d)-%-23s%n", i, s);
+        }
     }
 
     public static int positionMay(char c) {
