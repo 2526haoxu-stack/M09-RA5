@@ -32,9 +32,9 @@ public class Polialfabetic {
 
     public static String xifraPoliAlfa(String phrase) {
         StringBuilder stringBuilder = new StringBuilder();
-        permutaAlfabet(r, array);
 
         for (int i = 0; i < phrase.length(); i++) {
+            permutaAlfabet(r, array);
             char c = phrase.charAt(i);
             int p = 0;
             if (Character.isUpperCase(c)) {
@@ -54,9 +54,9 @@ public class Polialfabetic {
 
     public static String desxifraPoliAlfa(String s) {
         StringBuilder stringBuilder = new StringBuilder();
-        permutaAlfabet(r, array);
 
         for (int i = 0; i < s.length(); i++) {
+            permutaAlfabet(r, array);
             char c = s.charAt(i);
             int p = 0;
             if (Character.isUpperCase(c)) {
