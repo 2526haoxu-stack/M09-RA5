@@ -54,31 +54,45 @@ public class AES {
         SecretKeySpec secretKey = new SecretKeySpec(hashClau, ALGORISME_XIFRAT);
 
         // Encrypt.
-        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+        Cipher cipher = Cipher.getInstance(FORMAT_AES);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivSpec);
         byte[] xifrat = cipher.doFinal(b);
 
         // Combinar IV i part xifrada.
         byte[] combinacion = new byte[iv.length+xifrat.length];
 
-        for (int i = 0; i < combinacion.length; i++) {
-
-        }
+        System.arraycopy(iv, 0, combinacion, 0, iv.length);
+        System.arraycopy(xifrat, 0, combinacion, iv.length, xifrat.length);
 
         // return iv+msgxifrat
+        return combinacion;
     }
 
     public static String desxifraAES(byte[] bIvIMsgXifrat, String clau)
             throws Exception {
 
         // Extreure l'IV.
+        byte[] ivExtret = new byte[iv.length];
+
+        for (int i = 0; i < iv.length; i++) { ivExtret[i] = iv[i]; }
 
         // Extreure la part xifrada.
+        byte[] xifratExtret = new byte[bIvIMsgXifrat.length-iv.length];
+
+        for (int i = iv.length; i < bIvIMsgXifrat.length; i++) { xifratExtret[i-iv.length] = bIvIMsgXifrat[i]; }
 
         // Fer hash de la clau
+        MessageDigest md = MessageDigest.getInstance(ALGORISME_HASH);
+        byte[] hashClau = md.digest(clau.getBytes("UTF-8"));
+        SecretKeySpec secretKey = new SecretKeySpec(hashClau, ALGORISME_XIFRAT);
 
         // Desxifrar.
+        IvParameterSpec ivSpec = new IvParameterSpec(ivExtret);
+        Cipher cipher = Cipher.getInstance(FORMAT_AES);
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivSpec);
+        byte[] Desxifrat = cipher.doFinal(xifratExtret);
 
         // return String desxifrat
+        return new String(Desxifrat, "UTF-8");
     }
 }
