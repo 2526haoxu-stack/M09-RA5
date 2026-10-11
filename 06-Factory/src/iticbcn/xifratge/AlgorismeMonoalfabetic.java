@@ -2,7 +2,7 @@ package iticbcn.xifratge;
 
 public class AlgorismeMonoalfabetic extends AlgorismeFactory {
     @Override
-    public Xifrador getXifrador() {
+    public Xifrador creaXifrador() {
         return new XifradorMonoalfabetic();
     }
     

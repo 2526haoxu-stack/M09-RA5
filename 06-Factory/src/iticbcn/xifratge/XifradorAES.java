@@ -15,28 +15,22 @@ public class XifradorAES implements Xifrador {
 
     private static final String CLAU = "LaClauSecretaQueVulguis";
 
-    public static void main(String[] args) {
-        XifradorAES xifradorAES = new XifradorAES();
-        String msgs[] = {"Lorem ipsum dicet",
-                "Hola Andrés cómo está tu cuñado",
-                "Àgora ïlla Ôtto"};
+    @Override
+    public TextXifrat xifra(String text, String clau) throws ClauNoSuportada {
+        try {
+            return new TextXifrat(xifraAES(text, clau));
+        } catch (Exception e) {
+            throw new IllegalStateException("Error en xifrar el text", e);
+        }
+    }
 
-        for (int i = 0; i < msgs.length; i++) {
-            String msg = msgs[i];
-
-            byte[] bXifrats = null;
-            String desxifrat = "";
-            try {
-                bXifrats = xifradorAES.xifraAES(msg, CLAU);
-                desxifrat = xifradorAES.desxifraAES(bXifrats, CLAU);
-            } catch (Exception e) {
-                System.err.println("Error de xifrat: "
-                        + e.getLocalizedMessage());
-            }
-            System.out.println("--------------------");
-            System.out.println("Msg: " + msg);
-            System.out.println("Enc: " + new String(bXifrats));
-            System.out.println("DEC: " + desxifrat);
+    @Override
+    public String desxifra(TextXifrat textXifrat, String clau)
+            throws ClauNoSuportada {
+        try {
+            return desxifraAES(textXifrat.getBytes(), clau);
+        } catch (Exception e) {
+            throw new IllegalStateException("Error en desxifrar el text", e);
         }
     }
 

@@ -2,7 +2,7 @@ package iticbcn.xifratge;
 
 public class AlgorismeRotX extends AlgorismeFactory {
     @Override
-    public Xifrador getXifrador() {
+    public Xifrador creaXifrador() {
         return new XifradorRotX();
     }
     

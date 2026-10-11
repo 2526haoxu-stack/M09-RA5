@@ -1,4 +1,5 @@
 package iticbcn.xifratge;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,29 +11,9 @@ public class XifradorMonoalfabetic implements Xifrador {
     static final String[] phrases = {"Test 01 àrbritre, coixí, Perímetre", "Test 02 Taüll, DÍA, año", "Test 03 Peça, Òrrius, Bòvila"};
     String[] phrasesPermutat = new String[phrases.length];
 
-    public static void main(String[] args) {
-        XifradorMonoalfabetic xifradorMonoalfabetic = new XifradorMonoalfabetic();
-        List<Character> list = xifradorMonoalfabetic.permutaAlfabet(array);
-        xifradorMonoalfabetic.fill(list);
-
-        xifradorMonoalfabetic.mostrarArrayNormal(array);
-        System.out.println();
-        xifradorMonoalfabetic.mostrarArrayPermutado(xifradorMonoalfabetic.arrayPermutado);
-        System.out.println("\n");
-
-        System.out.println("Xifratge:");
-        for (int i = 0; i < phrases.length; i++) {
-            String result = xifradorMonoalfabetic.xifraMonoAlfa(phrases[i]);
-            xifradorMonoalfabetic.phrasesPermutat[i] = result;
-            System.out.printf("%-35s -> %s%n", phrases[i], xifradorMonoalfabetic.phrasesPermutat[i]);
-        }
-
-        System.out.println("\nDesxifratge:");
-        for (int i = 0; i < phrases.length; i++) {
-            String result = xifradorMonoalfabetic.desxifraMonoAlfa(phrases[i]);
-            xifradorMonoalfabetic.phrasesPermutat[i] = result;
-            System.out.printf("%-35s -> %s%n", xifradorMonoalfabetic.phrasesPermutat[i], phrases[i]);
-        }
+    public XifradorMonoalfabetic() {
+        List<Character> list = XifradorMonoalfabetic.this.permutaAlfabet(array);
+        XifradorMonoalfabetic.this.fill(list);
     }
 
     public List<Character> permutaAlfabet(char[] array) {
@@ -70,18 +51,29 @@ public class XifradorMonoalfabetic implements Xifrador {
             char c = s.charAt(i);
             int p = 0;
             if (Character.isUpperCase(c)) {
-                if (exist(c)) {
-                    p = getPosition(c);
-                    stringBuilder.append(arrayPermutado[p]);
-                } else stringBuilder.append(c);
-            } else {
-                c = Character.toUpperCase(c);
-                if (exist(c)) {
-                    p = getPosition(c);
-                    stringBuilder.append(Character.toLowerCase(arrayPermutado[p]));
-                } else stringBuilder.append(c);
-            }
+            if (existPermutat(c)) {
+                p = getPositionPermutat(c);
+                stringBuilder.append(array[p]);
+            } else stringBuilder.append(c);
+        } else {
+            c = Character.toUpperCase(c);
+            if (existPermutat(c)) {
+                p = getPositionPermutat(c);
+                stringBuilder.append(Character.toLowerCase(array[p]));
+            } else stringBuilder.append(c);
+        }
         } return stringBuilder.toString();
+    }
+
+    public int getPositionPermutat(char c) {
+        int p = 0;
+        for (int i = 0; i < arrayPermutado.length; i++) { if (c == arrayPermutado[i]) p = i; }
+        return p;
+    }
+
+    public boolean existPermutat(char character) {
+        for (char c : arrayPermutado) { if (character == c) return true; }
+        return false;
     }
 
     public void mostrarArrayNormal(char[] array) {
@@ -108,12 +100,14 @@ public class XifradorMonoalfabetic implements Xifrador {
     }
 
     @Override
-    public TextXifrat xifra(String text, String clau) {
-        return new TextXifrat(xifraMonoAlfa(text));
+    public TextXifrat xifra(String text, String clau) throws ClauNoSuportada {
+        if (clau != null) throw new ClauNoSuportada("Xifratxe monoalfabètic no suporta clau != null");
+        return new TextXifrat(xifraMonoAlfa(text).getBytes(StandardCharsets.UTF_8));
     }
 
     @Override
-    public String desxifra(TextXifrat textXifrat, String clau) {
-        return desxifraMonoAlfa(textXifrat.getTextXifrat());
+    public String desxifra(TextXifrat textXifrat, String clau) throws ClauNoSuportada {
+        if (clau != null) throw new ClauNoSuportada("Xifratxe monoalfabètic no suporta clau != null");
+        return desxifraMonoAlfa(new String(textXifrat.getBytes(), StandardCharsets.UTF_8));
     }
 }

@@ -1,5 +1,7 @@
 package iticbcn.xifratge;
 
+import java.nio.charset.StandardCharsets;
+
 public class XifradorRotX implements Xifrador {
     static final String s = "aáàbcçdeéèfghiíìïjklmnñoóòpqrstuúùüvwxyz";
     static final char[] arrayMin = s.toCharArray();
@@ -8,21 +10,26 @@ public class XifradorRotX implements Xifrador {
     static final String[] wordsDesxifra = new String[wordsXifra.length];
     static final int[] jumps = {0,2,4,6};
 
-    public static void main(String[] args) {
-        XifradorRotX xifradorRotX = new XifradorRotX();
-        System.out.println("\nXifrat\n------");
-        for (int i = 0; i < wordsXifra.length; i++) {
-            String s = xifradorRotX.xifraRotX(wordsXifra[i], jumps[i]);
-            wordsDesxifra[i] = s;
-            System.out.printf("(%d)-%-23s => %s%n", jumps[i], wordsXifra[i], s);
-        }
-
-        System.out.println("\nDesxifrat\n------");
-        for (int i = 0; i < wordsDesxifra.length; i++) { System.out.printf("(%d)-%-23s => %s%n", jumps[i], wordsDesxifra[i], xifradorRotX.desxifraRotX(wordsDesxifra[i], jumps[i])); }
-
-        System.out.println("\nMissatge xifrat: Úiüht, úiü wx ùxì ív?\n------");
-        xifradorRotX.forcaBrutaRotX(wordsDesxifra[3]);
+    @Override
+    public TextXifrat xifra(String text, String clau) throws ClauNoSuportada {
+        try {
+            Integer.parseInt(clau);
+            if (Integer.parseInt(clau) < 0 || Integer.parseInt(clau) > 40) throw new ClauNoSuportada("Clau de RotX ha de ser un sencer de 0 a 40");
+        } catch (NumberFormatException e) {
+            throw new ClauNoSuportada("Clau de RotX ha de ser un sencer de 0 a 40");
+        } return new TextXifrat(xifraRotX(text, Integer.parseInt(clau)).getBytes(StandardCharsets.UTF_8));
     }
+
+    @Override
+    public String desxifra(TextXifrat textXifrat, String clau) throws ClauNoSuportada {
+        try {
+            Integer.parseInt(clau);
+            if (Integer.parseInt(clau) < 0 || Integer.parseInt(clau) > 40) throw new ClauNoSuportada("Clau de RotX ha de ser un sencer de 0 a 40");
+        } catch (NumberFormatException e) {
+            throw new ClauNoSuportada("Clau de RotX ha de ser un sencer de 0 a 40");
+        } return desxifraRotX(new String(textXifrat.getBytes(), StandardCharsets.UTF_8), Integer.parseInt(clau));
+    }
+
 
     public String xifraRotX(String word, int jump) {
         String result = "";
